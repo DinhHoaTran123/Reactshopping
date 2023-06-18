@@ -1,0 +1,103 @@
+.text {
+  &-big {
+    font-size: big;
+  }
+}
+
+.img {
+  &--round {
+    border-radius: 50%;
+  }
+
+  &--border-black {
+    border: 1px solid black;
+  }
+}
+
+.bg {
+  &-success {
+    background-color: #ccf6c8;
+    color: black;
+  }
+
+  &-warning {
+    background-color: #fafcc2;
+    color: black;
+  }
+
+  &-danger {
+    background-color: #aa3a3a;
+    color: white;
+  }
+
+  &-green {
+    background-color: #668866;
+    color: white;
+  }
+
+  &-white {
+    background-color: white;
+    color: black;
+  }
+
+  &-facebook {
+    background-image: linear-gradient(to top, #0063e0 0%, #18abfd 100%);
+    color: white;
+  }
+
+  &-orange-gradient {
+    background-image: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+    color: black;
+  }
+}
+
+.m {
+  &t {
+    &-5 {
+      margin-top: 5px;
+    }
+    &-10 {
+      margin-top: 10px;
+    }
+    &-15 {
+      margin-top: 15px;
+    }
+    &-20 {
+      margin-top: 20px;
+    }
+    &-25 {
+      margin-top: 25px;
+    }
+  }
+
+  &b {
+    &-5 {
+      margin-bottom: 5px;
+    }
+    &-10 {
+      margin-bottom: 10px;
+    }
+    &-15 {
+      margin-bottom: 15px;
+    }
+    &-20 {
+      margin-bottom: 20px;
+    }
+    &-25 {
+      margin-bottom: 25px;
+    }
+  }
+}
+
+.bordered {
+  border: 1px solid #f0eeef;
+}
+
+.original-price {
+  text-decoration: line-through #fa6bfe;
+  color: #fa6bfe;
+}
+
+.theme-color {
+  color: #668866;
+}

@@ -1,0 +1,122 @@
+.custom-carousel {
+  .arrow-button {
+    position: absolute;
+    z-index: 1;
+    height: 100%;
+    background: transparent;
+    cursor: pointer;
+    width: 100px;
+    border: 0px;
+    &-left {
+      left: 0;
+    }
+    &-right {
+      right: 0;
+    }
+  }
+  .ant-carousel {
+    background-image: url('/assets/images/carousel-bg.jpg');
+    background-size: cover;
+  }
+  .custom-slide {
+    height: 750px;
+    .slide-wrapper-row {
+      height: 100%;
+      .slide-wrapper-col {
+        height: 100%;
+        .slide-content {
+          position: absolute;
+          top: 45%;
+          left: 10%;
+          transform: translateY(-50%);
+          width: 100%;
+          h1 {
+            font-size: 24px;
+          }
+          h1::before {
+            background-color: black;
+            content: '';
+            display: inline-block;
+            height: 2px;
+            position: relative;
+            vertical-align: middle;
+            width: 25%;
+            margin-right: 15px;
+          }
+          p {
+            font-size: 48px;
+            margin-bottom: 0px;
+          }
+        }
+      }
+    }
+  }
+}
+
+.featured-section {
+  margin-top: 10px;
+  .ant-card {
+    text-align: center;
+  }
+
+  .card {
+    &-left {
+      background-color: #ccfbe9;
+    }
+    &-middle {
+      background-color: #f2fbcc;
+    }
+    &-right {
+      background-color: #ddfbcc;
+    }
+  }
+}
+
+.product-section {
+  .ant-card {
+    margin-top: 16px;
+  }
+}
+
+.txt {
+  &--uppercase {
+    text-transform: uppercase;
+  }
+
+  &--dark-olive {
+    color: darkolivegreen;
+  }
+
+  &--ellipsis {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+
+    &-1 {
+      -webkit-line-clamp: 1;
+    }
+
+    &-2 {
+      -webkit-line-clamp: 2;
+    }
+
+    &-3 {
+      -webkit-line-clamp: 3;
+    }
+
+    &-5 {
+      -webkit-line-clamp: 5;
+    }
+  }
+
+  &--font-lobster {
+    font-family: 'Lobster', cursive;
+  }
+}
+
+.bg {
+  &--dark-olive {
+    background-color: darkolivegreen;
+    color: white;
+  }
+}
