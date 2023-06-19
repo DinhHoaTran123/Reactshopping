@@ -26,9 +26,7 @@ function ProductMenu({ product, cart = false }) {
             <span>{formatVietnameseCurrency(product['price'])}</span>
           </h3>
           <h4>
-            {cart ? (
-              `Số lượng trong giỏ hàng: ${product['cartQuantity']}`
-            ) : product['storageQuantity'] > 0 ? (
+            {product.countInStock > 0 ? (
               <span style={{ color: '#4EC067' }}>
                 <CheckOutlined /> Còn hàng
               </span>

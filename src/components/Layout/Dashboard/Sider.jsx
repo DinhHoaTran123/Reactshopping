@@ -11,12 +11,12 @@ export default function DashboardSider({ isCollapsed }) {
   const items = [
     {
       label: 'Dashboard',
-      key: routePaths.dashboard,
+      key: [routePaths.admin.index, routePaths.admin.dashboard].join('/'),
       icon: <DashboardOutlined />,
     },
     {
       label: 'User',
-      key: routePaths.user,
+      key: [routePaths.admin.index, routePaths.admin.user].join('/'),
       icon: <DashboardOutlined />,
     },
   ];
@@ -27,7 +27,7 @@ export default function DashboardSider({ isCollapsed }) {
   const [selectedKeys, setSelectedKeys] = useState([]);
 
   useEffect(() => {
-    const keys = location.pathname.split('/').slice(1);
+    const keys = location.pathname.slice(1);
     setOpenKeys(keys);
     setSelectedKeys(keys);
   }, [location.pathname]);

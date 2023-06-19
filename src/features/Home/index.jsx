@@ -9,17 +9,13 @@ import './Home.scss';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { productApi } from 'utils/api/product';
+import { DEFAULT_PAGINATION_DATA } from 'utils/constants';
 
 export default function HomePage() {
   const { data: hotProducts, isLoading } = useQuery({
     queryKey: [productApi.getKey],
     queryFn: (context) => productApi.get(context, { size: 8 }),
-    placeholderData: {
-      result: [],
-      total: 0,
-      totalPages: 0,
-      currentPage: 0,
-    },
+    placeholderData: DEFAULT_PAGINATION_DATA,
   });
 
   return (

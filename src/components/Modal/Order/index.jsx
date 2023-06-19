@@ -9,6 +9,7 @@ import { useQuery } from '@tanstack/react-query';
 import { orderApi } from 'utils/api/order';
 import { useState } from 'react';
 import DetailOrderModal from './Detail';
+import { DEFAULT_PAGINATION_DATA } from 'utils/constants';
 
 function ListOrderModal({ open, onClose }) {
   const { isAuthenticated } = useContext(AuthContext);
@@ -17,14 +18,15 @@ function ListOrderModal({ open, onClose }) {
   const [openDetailOrderModal, setOpenDetailOrderModal] = useState(false);
 
   const { data: orders, isLoading: isFetchingOrders } = useQuery({
-    queryKey: [orderApi.getKey],
-    queryFn: orderApi,
+    queryKey: [orderApi.getMyOrderKey],
+    queryFn: orderApi.getMyOrder,
+    placeholderData: DEFAULT_PAGINATION_DATA,
   });
 
   const { data: detailOrder, isLoading: isFetchingDetailOrder } = useQuery({
     queryKey: [orderApi.getByIdKey, selectedId],
     queryFn: (context) => orderApi.getById(context, selectedId),
-    enabled: isAuthenticated && selectedId,
+    enabled: Boolean(isAuthenticated && selectedId),
   });
 
   const onCloseDetailOrderModal = () => {
@@ -106,7 +108,7 @@ function ListOrderModal({ open, onClose }) {
       ]}
       closable={false}
     >
-      {orders.length > 0 ? (
+      {orders.result.length > 0 ? (
         <Table loading={isFetchingOrders} rowKey='id' dataSource={orders} columns={columns} />
       ) : (
         <Alert

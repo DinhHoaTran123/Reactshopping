@@ -12,6 +12,15 @@ const get = (context, params) => {
   }).then((resp) => resp.data);
 };
 
+const getMyOrder = (context) => {
+  const { signal } = context;
+  return axiosClient({
+    url: '/v1/orders/my-orders',
+    method: HTTP_METHODS.GET,
+    signal,
+  }).then((resp) => resp.data?.data?.orders);
+};
+
 const getById = (context, id) => {
   const { signal } = context;
   return axiosClient({
@@ -24,6 +33,8 @@ const getById = (context, id) => {
 export const orderApi = {
   get,
   getKey: 'get',
+  getMyOrder,
+  getMyOrderKey: 'getMyOrder',
   getById,
   getByIdKey: 'getById',
 };

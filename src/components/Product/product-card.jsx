@@ -7,6 +7,7 @@ import {
   PhoneFilled,
   RetweetOutlined,
   ShoppingCartOutlined,
+  StarFilled,
 } from '@ant-design/icons';
 import { classNames, formatVietnameseCurrency } from 'utils/common';
 import './Product.scss';
@@ -27,10 +28,6 @@ function ProductCard(props) {
     setHidden(true);
   };
 
-  const handleAddCompareProduct = () => {
-    // dispatch(addProductToCompare(product));
-  };
-
   const handleAddProductToCart = () => {
     // dispatch(addProductToCart(product));
   };
@@ -41,6 +38,9 @@ function ProductCard(props) {
       onMouseEnter={handleHovering}
       onMouseLeave={handleStopHovering}
       className='w-full'
+      bodyStyle={{
+        padding: '12px 24px',
+      }}
       cover={
         <div className='w-full relative' style={{ height: 300 }}>
           <Carousel speed={500} ref={carousel}>
@@ -78,35 +78,29 @@ function ProductCard(props) {
                 />
               </Tooltip>
               <Tooltip title='Xem chi tiết'>
-                <Link to={`/product/detail/${product['slug']}.${product['id']}`}>
+                <Link to={`/product/detail/${product['id']}`}>
                   <Button size='large' shape='circle'>
                     <EyeTwoTone />
                   </Button>
                 </Link>
-              </Tooltip>
-              <Tooltip title='So sánh sản phẩm'>
-                <Button
-                  onClick={handleAddCompareProduct}
-                  size='large'
-                  shape='circle'
-                  icon={<RetweetOutlined />}
-                />
               </Tooltip>
             </div>
           </div>
         </div>
       }
     >
-      <Row>
-        <Col span={24}>
-          <Link to={`/product/detail/${product['id']}`}>
-            <h4 className='product-card__name'>{product.name}</h4>
-          </Link>
-        </Col>
-      </Row>
-      <p>
+      <div>
+        <Link to={`/product/detail/${product['id']}`}>
+          <span className='product-card__name font-semibold'>{product.name}</span>
+        </Link>
+      </div>
+      <div>
+        {(product.rating || 0).toFixed(2)} <StarFilled className='text-yellow-500' /> (
+        {product.numOfReviews})
+      </div>
+      <div>
         <span className={'font-bold'}>{formatVietnameseCurrency(product.price)}</span>
-      </p>
+      </div>
       <p>
         {product.countInStock > 0 ? (
           <span style={{ color: '#4EC067' }}>

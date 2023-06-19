@@ -15,6 +15,8 @@ import User from 'features/User';
 // user
 import Home from 'features/Home';
 import { checkTokenValid } from 'utils/common';
+import Product from 'features/Product';
+import ProductDetail from 'features/Product/detail';
 
 function PageContainer({ Component, title, roles = [], ...props }) {
   useEffect(() => {
@@ -58,12 +60,24 @@ function App() {
             <Route path='/admin' element={<DashboardLayout />}>
               <Route index element={<PageContainer Component={Dashboard} title='Dashboard' />} />
               <Route
-                path={routePaths.user}
-                element={<PageContainer Component={User} title='User' />}
+                path={routePaths.admin.user}
+                element={<PageContainer Component={User} title='Admin - Người dùng' />}
+              />
+              <Route
+                path={routePaths.admin.product}
+                element={<PageContainer Component={User} title='Admin - Sản phẩm' />}
               />
             </Route>
             <Route path='/' element={<UserLayout />}>
               <Route index element={<PageContainer Component={Home} title='Trang chủ' />} />
+              <Route
+                path={routePaths.product}
+                element={<PageContainer Component={Product} title='Sản phẩm' />}
+              />
+              <Route
+                path={routePaths.productDetail}
+                element={<PageContainer Component={ProductDetail} title='Chi tiết sản phẩm' />}
+              />
             </Route>
             <Route
               path={routePaths.login}

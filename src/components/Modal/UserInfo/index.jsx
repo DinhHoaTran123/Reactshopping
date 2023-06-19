@@ -44,7 +44,7 @@ function UserModal({ open, onClose }) {
           rules={[
             {
               required: true,
-              message: 'Họ và tên',
+              message: 'Bạn cần nhập tên của bản thân',
             },
           ]}
           label='Họ tên'

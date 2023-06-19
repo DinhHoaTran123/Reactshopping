@@ -37,3 +37,10 @@ export const ROLES = {
   USER: 'user',
   ADMIN: 'admin',
 };
+
+export const DEFAULT_PAGINATION_DATA = {
+  result: [],
+  total: 0,
+  totalPages: 0,
+  currentPage: 0,
+};
