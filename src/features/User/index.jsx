@@ -7,12 +7,12 @@ import { toast } from 'react-toastify';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { userApi } from 'utils/api/user';
 import { useSearchParams } from 'react-router-dom';
-import { DEFAULT_PER_PAGE } from 'utils/constants';
+import { DEFAULT_PAGINATION_DATA, DEFAULT_PER_PAGE } from 'utils/constants';
 
 export default function Process() {
   const [searchParams, setSearchParams] = useSearchParams({
-    limit: DEFAULT_PER_PAGE,
-    offset: 0,
+    size: DEFAULT_PER_PAGE,
+    page: 1,
   });
   const [openDetailModal, setOpenDetailModal] = useState(false);
   const [selectingItem, setSelectingItem] = useState(null);
@@ -26,6 +26,7 @@ export default function Process() {
     queryKey: [userApi.getKey, searchParams],
     queryFn: (context) => userApi.get(context, Object.fromEntries(searchParams)),
     retry: false,
+    placeholderData: DEFAULT_PAGINATION_DATA,
   });
 
   useEffect(() => {
@@ -68,10 +69,8 @@ export default function Process() {
     mutationKey: [userApi.removeKey],
     mutationFn: userApi.remove,
     onSuccess: (resp) => {
-      if (resp.data.data.id) {
-        toast.success('Xóa user thành công');
-        getData();
-      }
+      toast.success('Xóa user thành công');
+      getData();
     },
     onError: (err) => {
       toast.error('Xóa user thất bại');
@@ -127,8 +126,8 @@ export default function Process() {
 
   const onChangePage = (page, pageSize) => {
     setSearchParams((prev) => {
-      prev.set('limit', pageSize);
-      prev.set('offset', (page - 1) * pageSize);
+      prev.set('size', pageSize);
+      prev.set('page', page);
       return prev;
     });
   };
@@ -146,8 +145,8 @@ export default function Process() {
       align: 'center',
       width: 1,
       render: (text, record, index) => (
-        <Typography.Text copyable={{ text: record.id }}>
-          {index + parseInt(searchParams.get('offset') || 0) + 1}
+        <Typography.Text>
+          {index + 1 + (parseInt(searchParams.get('page') || 0) - 1) * searchParams.get('size')}
         </Typography.Text>
       ),
     },
@@ -192,12 +191,12 @@ export default function Process() {
       <Table
         bordered
         columns={columns}
-        dataSource={paginationData?.data || []}
+        dataSource={paginationData.result}
         rowKey='id'
         loading={isFetchingData}
         pagination={{
           showSizeChanger: true,
-          pageSize: searchParams.get('limit') || DEFAULT_PER_PAGE,
+          pageSize: searchParams.get('size') || DEFAULT_PER_PAGE,
           pageSizeOptions: [10, 20, 50, 100],
           total: paginationData?.total || 0,
           onChange: onChangePage,

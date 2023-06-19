@@ -28,29 +28,6 @@ function UserLayout({ history }) {
           </div>
         </Layout.Content>
         <UserFooter />
-        <Button
-          style={{ right: 25, bottom: 25 }}
-          className='layout-fixed bg-facebook'
-          shape='circle'
-          size='large'
-          icon={<FacebookOutlined />}
-        />
-        <Button
-          style={{ right: 25, bottom: 25 }}
-          className='layout-fixed bg-orange-gradient'
-          shape='circle'
-          size='large'
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        >
-          <ArrowUpOutlined />
-        </Button>
-        <Button
-          style={{ right: 25, bottom: '70%' }}
-          className='layout-fixed bg-facebook'
-          shape='circle'
-          size='large'
-          icon={<FacebookOutlined />}
-        />
       </Layout>
     </Layout>
   );

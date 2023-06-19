@@ -13,21 +13,21 @@ const myProfile = (context) => {
 
 const get = (context, params) => {
   const { signal } = context;
-  axiosClient({
+  return axiosClient({
     url: '/v1/users',
     method: HTTP_METHODS.GET,
     signal,
     params,
-  });
+  }).then((resp) => resp.data?.data);
 };
 
 const getById = (context, id) => {
   const { signal } = context;
-  axiosClient({
+  return axiosClient({
     url: `/v1/users/${id}`,
     method: HTTP_METHODS.GET,
     signal,
-  });
+  }).then((resp) => resp.data?.data);
 };
 
 const create = (data) => {

@@ -3,17 +3,13 @@ import { Col, Tabs } from 'antd';
 import ProductCardGrid from 'components/Product/product-card-grid';
 import { useQuery } from '@tanstack/react-query';
 import { productApi } from 'utils/api/product';
+import { DEFAULT_PAGINATION_DATA } from 'utils/constants';
 
 export default function ProductSection() {
   const { data: products, isLoading } = useQuery({
     queryKey: [productApi.getKey],
     queryFn: (context) => productApi.get(context, { size: 24 }),
-    placeholderData: {
-      result: [],
-      total: 0,
-      totalPages: 0,
-      currentPage: 0,
-    },
+    placeholderData: DEFAULT_PAGINATION_DATA,
   });
 
   return (
