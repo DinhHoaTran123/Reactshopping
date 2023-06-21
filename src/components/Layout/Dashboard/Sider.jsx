@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { routePaths } from 'routers';
 import { Image, Layout, Menu } from 'antd';
-import { DashboardOutlined } from '@ant-design/icons';
+import {
+  DashboardOutlined,
+  DropboxOutlined,
+  ShoppingCartOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
 import BrandFullOrangeTransparent from 'assets/images/brand-full-orange-transparent.png';
 import BrandIconOrangeTransparent from 'assets/images/brand-icon-orange-transparent.png';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -15,19 +20,19 @@ export default function DashboardSider({ isCollapsed }) {
       icon: <DashboardOutlined />,
     },
     {
-      label: 'User',
+      label: 'Người dùng',
       key: [routePaths.admin.index, routePaths.admin.user].join('/'),
-      icon: <DashboardOutlined />,
+      icon: <UserOutlined />,
     },
     {
-      label: 'Product',
+      label: 'Sản phẩm',
       key: [routePaths.admin.index, routePaths.admin.product].join('/'),
-      icon: <DashboardOutlined />,
+      icon: <DropboxOutlined />,
     },
     {
-      label: 'Order',
+      label: 'Đơn hàng',
       key: [routePaths.admin.index, routePaths.admin.order].join('/'),
-      icon: <DashboardOutlined />,
+      icon: <ShoppingCartOutlined />,
     },
   ];
 
@@ -58,7 +63,7 @@ export default function DashboardSider({ isCollapsed }) {
         collapsed={isCollapsed}
         className='!fixed top-0 left-0 bottom-0 overflow-auto h-screen'
       >
-        <div style={{ margin: 16 }}>
+        <div className='m-4 cursor-pointer' onClick={() => navigate('/')}>
           {isCollapsed ? (
             <Image preview={false} src={BrandIconOrangeTransparent} alt='Logo' height={32} />
           ) : (

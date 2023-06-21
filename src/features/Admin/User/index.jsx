@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Divider, Input, Modal, Row, Space, Table, Typography } from 'antd';
+import { Avatar, Button, Divider, Input, Modal, Row, Space, Table, Typography } from 'antd';
 import Actions from './components/Actions';
 import DetailModal from './components/DetailModal';
 import { toast } from 'react-toastify';
@@ -36,8 +36,8 @@ export default function Process() {
   const { mutate: create, isLoading: isCreating } = useMutation({
     mutationKey: [userApi.createKey],
     mutationFn: userApi.create,
-    onSuccess: (resp) => {
-      if (resp.data.data) {
+    onSuccess: (data) => {
+      if (data.data) {
         onCloseDetailModal();
         toast.success('Tạo user mới thành công');
         getData();
@@ -52,8 +52,8 @@ export default function Process() {
   const { mutate: update, isLoading: isUpdating } = useMutation({
     mutationKey: [userApi.updateKey],
     mutationFn: userApi.update,
-    onSuccess: (resp) => {
-      if (resp.data.data) {
+    onSuccess: (data) => {
+      if (data.data) {
         onCloseDetailModal();
         toast.success('Cập nhật user thành công');
         getData();
@@ -79,7 +79,7 @@ export default function Process() {
   });
 
   const {
-    data: jobHiringChannelDetail,
+    data: userDetail,
     isError: getDetailError,
     isFetching: isGettingDetail,
   } = useQuery({
@@ -103,7 +103,10 @@ export default function Process() {
 
   const onSubmit = (item) => {
     if (item.id) {
-      update(item);
+      const data = { ...item };
+      delete data.id;
+      delete data.email;
+      update({ data, id: item.id });
     } else {
       create(item);
     }
@@ -151,8 +154,28 @@ export default function Process() {
       ),
     },
     {
+      title: 'Username',
+      render: (record) => (
+        <Space size='small'>
+          <Avatar
+            src={`https://ui-avatars.com/api/?background=random&name=${record.username}`}
+            alt='avatar'
+          />
+          <span>{record.username}</span>
+        </Space>
+      ),
+    },
+    {
       title: 'Email',
       dataIndex: 'email',
+    },
+    {
+      title: 'SĐT',
+      dataIndex: 'contact',
+    },
+    {
+      title: 'Role',
+      dataIndex: 'role',
     },
     {
       title: 'Hành động',
@@ -172,7 +195,7 @@ export default function Process() {
   return (
     <>
       <Row justify='space-between' align='middle'>
-        <Typography.Title level={2}>User</Typography.Title>
+        <Typography.Title level={2}>Người dùng</Typography.Title>
         <Space size='middle'>
           <Input.Search
             placeholder='Tìm kiếm user theo email'
@@ -202,13 +225,13 @@ export default function Process() {
           onChange: onChangePage,
         }}
       />
-      {openDetailModal && (jobHiringChannelDetail || !selectingItem) && (
+      {openDetailModal && (userDetail || !selectingItem) && (
         <DetailModal
           open={openDetailModal}
           isProcessing={isCreating || isUpdating}
           onSubmit={onSubmit}
           onCancel={onCloseDetailModal}
-          item={jobHiringChannelDetail}
+          item={userDetail}
         />
       )}
     </>

@@ -1,75 +1,47 @@
-import { Alert, Button, Col, Divider, Input, PageHeader, Row, Table, Form, Radio } from 'antd';
-import React, { useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import PlaceHolderImg from '../../assets/img/product-placeholder.png';
-import { PlusOutlined, MinusOutlined, DeleteFilled, QuestionOutlined } from '@ant-design/icons';
-import { changeProductQuantity, removeProduct, submitOrder } from '../../redux/slices/cart';
-import { calcDiscountPrice, formatVietnameseCurrency } from '../../utils/common/common';
-import { openModal as openLoginModal } from '../../redux/slices/login';
-import produce from 'immer';
+import {
+  Button,
+  Col,
+  Divider,
+  Input,
+  Row,
+  Table,
+  Form,
+  Radio,
+  Typography,
+  InputNumber,
+} from 'antd';
+import React, { useContext } from 'react';
+import PlaceHolderImg from 'assets/images/product-placeholder.png';
+import { formatVietnameseCurrency } from 'utils/common';
 import { toast } from 'react-toastify';
-import { getUserFromToken } from '../../utils/common/common';
+import { CartContext } from 'context/Cart';
+import useCartManagement from 'hooks/cart-management';
+import { debounce } from 'lodash';
+import { useMutation } from '@tanstack/react-query';
+import { orderApi } from 'utils/api/order';
+import { AuthContext } from 'context/Auth';
 
-function Cart(props) {
-  const { products, isLoading } = useSelector((state) => state.cart);
-  const dispatch = useDispatch();
-  const user = getUserFromToken();
-
+function Cart() {
   const [infoForm] = Form.useForm();
 
+  const { cartDetail } = useContext(CartContext);
+  const { onRemoveItem, onUpdateItem, onRemoveCart } = useCartManagement();
+  const { userInfo } = useContext(AuthContext);
+
   const initInfo = {
-    name: user ? user['fullName'] : '',
-    phone: user ? user['phone'] : '',
-    address: user ? user['address'] : '',
-    note: '',
-    idUser: user ? user['id'] : null,
+    contact: userInfo.contact || '',
+    address: '',
+    paymentMethod: '',
   };
 
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, []);
-
-  const originalPrice = useMemo(() => {
-    let price = 0;
-    products.forEach((product) => {
-      price += parseInt(product['price']) * parseInt(product['cartQuantity']);
-    });
-    return price;
-  }, [products]);
-
-  const discountPrice = useMemo(() => {
-    let price = 0;
-    products.forEach((product) => {
-      price +=
-        (product['isDiscount']
-          ? calcDiscountPrice(product['price'], product['discountPercent'])
-          : parseInt(product['price'])) * parseInt(product['cartQuantity']);
-    });
-    return price;
-  }, [products]);
-
-  useEffect(() => {
-    infoForm.setFields([{ name: 'totalPrice', value: parseInt(discountPrice) }]);
-  }, [discountPrice]);
-
-  const plusQuantity = (product) => {
-    const currentQuantity = parseInt(product['cartQuantity']);
-    dispatch(changeProductQuantity(product, currentQuantity + 1));
-  };
-
-  const minusQuantity = (product) => {
-    const currentQuantity = parseInt(product['cartQuantity']);
-    if (currentQuantity > 1) {
-      dispatch(changeProductQuantity(product, currentQuantity - 1));
+  const onChangeQuantity = (id, quantity) => {
+    if (quantity) {
+      onUpdateItem(id, quantity);
     }
   };
 
-  const removeProductCart = (product) => {
-    dispatch(removeProduct(product));
-  };
-
-  const handleOpenLoginModal = (key) => {
-    dispatch(openLoginModal(key));
+  const removeProductCart = (id) => {
+    onRemoveItem(id);
   };
 
   const handlePhoneKeyPress = (e) => {
@@ -78,23 +50,36 @@ function Cart(props) {
     }
   };
 
+  const { mutate: createOrder, isLoading: isCreatingOrder } = useMutation({
+    mutationKey: [orderApi.createKey],
+    mutationFn: orderApi.create,
+    onSuccess: () => {
+      toast.success('Tạo đơn hàng mới thành công');
+      onRemoveCart(cartDetail.cart.id);
+    },
+    onError: () => {
+      toast.error('Tạo đơn hàng thất bại, vui lòng thử lại sau');
+    },
+  });
+
   const handleSubmitCart = async () => {
-    if (products.length > 0) {
+    if (cartDetail.items.length > 0) {
       const values = await infoForm.validateFields();
       const orderData = {
-        ...initInfo,
-        ...values,
-        totalPrice: discountPrice,
-        products: products.map((p) => ({
-          idProduct: p.id,
-          quantity: p.cartQuantity,
-          price:
-            (p['isDiscount']
-              ? calcDiscountPrice(p['price'], p['discountPercent'])
-              : parseInt(p['price'])) * parseInt(p['cartQuantity']),
+        order: {
+          ...initInfo,
+          ...values,
+          totalPrice: cartDetail.cart?.totalPrice,
+          userId: cartDetail.cart?.userId,
+        },
+        itemArr: cartDetail.items.map((item) => ({
+          productId: item.itemCartInfo.id,
+          quantity: item.quantity,
+          price: item.price,
+          total: item.total,
         })),
       };
-      dispatch(submitOrder(orderData));
+      createOrder(orderData);
     } else {
       toast.error('Giỏ hàng trống.');
     }
@@ -103,8 +88,8 @@ function Cart(props) {
   const columns = [
     {
       title: 'Ảnh',
-      key: 'images',
-      dataIndex: 'images',
+      width: 1,
+      dataIndex: ['itemCartInfo', 'images'],
       render: (images) => (
         <img
           alt='Product img'
@@ -115,39 +100,26 @@ function Cart(props) {
     },
     {
       title: 'Sản phẩm',
-      key: 'product',
-      render: (text, record, index) => (
+      render: (text, record) => (
         <>
-          <h4>{record['name']}</h4>
-          <p className='mt-15'>
-            {Boolean(record['isDiscount']) && (
-              <span>
-                <span className='text-bold'>
-                  {formatVietnameseCurrency(
-                    calcDiscountPrice(record['price'], record['discountPercent'])
-                  )}
-                </span>
-                {' - '}
-              </span>
-            )}
-            <span className={`${record['isDiscount'] && 'original-price'} text-bold`}>
-              {formatVietnameseCurrency(record['price'])}
-            </span>
-          </p>
-          <p className='mt-10'>
+          <h4>{record.itemCartInfo.name}</h4>
+          <div className='flex gap-x-4 items-center'>
             <label>Số lượng:</label>
-            <Input
-              prefix={<Button onClick={() => minusQuantity(record)} icon={<MinusOutlined />} />}
-              suffix={<Button onClick={() => plusQuantity(record)} icon={<PlusOutlined />} />}
+            <InputNumber
+              value={record.quantity}
               min={1}
-              className='text-center'
-              style={{ width: 125 }}
-              bordered={false}
-              value={record['cartQuantity']}
+              onChange={debounce((quantity) => onChangeQuantity(record.id, quantity), 2000)}
+              controls={false}
             />
-          </p>
+            <span>
+              x <span className='font-semibold'>{formatVietnameseCurrency(record.price)}</span>
+            </span>
+            <span>
+              {'='} {formatVietnameseCurrency(record.total)}
+            </span>
+          </div>
           <p>
-            <Button size='small' onClick={() => removeProductCart(record)} type='link'>
+            <Button size='small' onClick={() => removeProductCart(record.id)} type='link'>
               Bỏ khỏi giỏ hàng
             </Button>
           </p>
@@ -162,25 +134,12 @@ function Cart(props) {
         <Col span={16} offset={4}>
           <Row>
             <Col span={24}>
-              <PageHeader ghost={false} title='Giỏ hàng của bạn' />
-              {!user && (
-                <Alert
-                  type='success'
-                  message={
-                    <span>
-                      Đã có tài khoản?{' '}
-                      <Button onClick={() => handleOpenLoginModal('login')} type='link'>
-                        Đăng nhập
-                      </Button>
-                    </span>
-                  }
-                />
-              )}
+              <Typography.Title>Giỏ hàng của bạn</Typography.Title>
             </Col>
           </Row>
           <Row className='mt-25' gutter={25}>
             <Col span={14}>
-              <Table rowKey='id' dataSource={products} columns={columns} />
+              <Table rowKey='id' dataSource={cartDetail.items} columns={columns} />
             </Col>
             <Col span={10}>
               <Row style={{ borderBottom: '2px solid black' }}>
@@ -192,24 +151,9 @@ function Cart(props) {
               </Row>
               <Form form={infoForm} initialValues={initInfo}>
                 <Row className='mt-10' gutter={10}>
-                  <Col span={12}>
+                  <Col span={24}>
                     <Form.Item
-                      name='name'
-                      rules={[
-                        {
-                          required: true,
-                          message: 'Xin vui lòng cho biết tên của bạn',
-                        },
-                      ]}
-                      label='Họ tên'
-                      labelCol={{ span: 24 }}
-                    >
-                      <Input />
-                    </Form.Item>
-                  </Col>
-                  <Col span={12}>
-                    <Form.Item
-                      name='phone'
+                      name='contact'
                       rules={[
                         {
                           required: true,
@@ -223,7 +167,7 @@ function Cart(props) {
                     </Form.Item>
                   </Col>
                 </Row>
-                <Row gutter={10}>
+                <Row>
                   <Col span={24}>
                     <Form.Item
                       name='address'
@@ -236,66 +180,54 @@ function Cart(props) {
                       label='Địa chỉ'
                       labelCol={{ span: 24 }}
                     >
-                      <Input />
-                    </Form.Item>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col span={24}>
-                    <Form.Item name='note' label='Ghi chú' labelCol={{ span: 24 }}>
                       <Input.TextArea />
                     </Form.Item>
                   </Col>
                 </Row>
-
-                <Row className='mt-15' style={{ borderBottom: '2px solid black' }}>
+                <Row className='mt-15'>
                   <Col span={24}>
                     <h3>
                       <b>Thông tin thanh toán</b>
                     </h3>
                   </Col>
                 </Row>
-                <Row className='mt-25'>
+                <Divider className='border-2 border-black' />
+                <Row>
                   <Col span={16}>
                     <h4>Tổng giá trị</h4>
                   </Col>
                   <Col span={8} className='text-red text-bold text-right'>
-                    {formatVietnameseCurrency(originalPrice)}
-                  </Col>
-                </Row>
-                <Row className='mt-10'>
-                  <Col span={16}>
-                    <h4>Khuyến mãi</h4>
-                  </Col>
-                  <Col span={8} className='text-red text-bold text-right'>
-                    {formatVietnameseCurrency(originalPrice - discountPrice)}
-                  </Col>
-                </Row>
-                <Row className='mt-10'>
-                  <Col span={24}>
-                    <h4>Phương thức thanh toán</h4>
-                  </Col>
-                  <Col span={24}>
-                    <Radio defaultChecked={true}>Giao hàng COD (Nhận hàng trả tiền)</Radio>
+                    <p>{formatVietnameseCurrency(cartDetail.cart?.totalPrice || 0)}</p>
                   </Col>
                 </Row>
                 <Divider />
                 <Row>
-                  <Col span={16}>
-                    <h4>THÀNH TIỀN</h4>
+                  <Col span={24}>
+                    <h4>Phương thức thanh toán</h4>
                   </Col>
-                  <Col span={8} className='text-red text-bold text-right'>
-                    {formatVietnameseCurrency(parseInt(discountPrice))}
+                  <Col span={24}>
+                    <Form.Item name='paymentMethod' rules={[{}]}>
+                      <Radio.Group>
+                        <div>
+                          <Radio value='COD'>Giao hàng COD (Nhận hàng trả tiền)</Radio>
+                        </div>
+                        <div>
+                          <Radio value='Online'>Paypal</Radio>
+                        </div>
+                      </Radio.Group>
+                    </Form.Item>
                   </Col>
                 </Row>
+                <Divider />
                 <Row className='mt-20'>
                   <Col span={24}>
                     <Button
-                      loading={isLoading}
+                      // loading={isLoading}
                       block
                       className='bg-green'
                       size='large'
                       onClick={handleSubmitCart}
+                      loading={isCreatingOrder}
                     >
                       XÁC NHẬN ĐƠN HÀNG
                     </Button>

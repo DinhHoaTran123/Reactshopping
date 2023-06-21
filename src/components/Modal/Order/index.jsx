@@ -1,5 +1,5 @@
-import React from 'react';
-import { Modal, Button, Alert, Table } from 'antd';
+import React, { useEffect } from 'react';
+import { Modal, Button, Alert, Table, Typography, Tag } from 'antd';
 import { EyeOutlined } from '@ant-design/icons';
 import { formatVietnameseCurrency } from 'utils/common';
 import moment from 'moment';
@@ -8,14 +8,15 @@ import { AuthContext } from 'context/Auth';
 import { useQuery } from '@tanstack/react-query';
 import { orderApi } from 'utils/api/order';
 import { useState } from 'react';
-import DetailOrderModal from './Detail';
+import DetailDrawer from './DetailDrawer';
 import { DEFAULT_PAGINATION_DATA } from 'utils/constants';
+import { toast } from 'react-toastify';
 
 function ListOrderModal({ open, onClose }) {
   const { isAuthenticated } = useContext(AuthContext);
 
-  const [selectedId, setSelectedId] = useState(null);
-  const [openDetailOrderModal, setOpenDetailOrderModal] = useState(false);
+  const [openDetailDrawer, setOpenDetailDrawer] = useState(false);
+  const [selectingItem, setSelectingItem] = useState(null);
 
   const { data: orders, isLoading: isFetchingOrders } = useQuery({
     queryKey: [orderApi.getMyOrderKey],
@@ -23,75 +24,87 @@ function ListOrderModal({ open, onClose }) {
     placeholderData: DEFAULT_PAGINATION_DATA,
   });
 
-  const { data: detailOrder, isLoading: isFetchingDetailOrder } = useQuery({
-    queryKey: [orderApi.getByIdKey, selectedId],
-    queryFn: (context) => orderApi.getById(context, selectedId),
-    enabled: Boolean(isAuthenticated && selectedId),
+  const {
+    data: orderDetail,
+    isError: getDetailError,
+    isFetching: isGettingDetail,
+  } = useQuery({
+    queryKey: [orderApi.getByIdKey, selectingItem?.id],
+    queryFn: (context) => orderApi.getById(context, selectingItem?.id),
+    enabled: Boolean(selectingItem?.id),
+    placeholderData: {
+      order: null,
+      items: [],
+    },
   });
 
-  const onCloseDetailOrderModal = () => {
-    setOpenDetailOrderModal(false);
+  useEffect(() => {
+    if (getDetailError) {
+      toast.error('Lấy thông tin chi tiết đơn hàng thất bại');
+      onCloseDetailDrawer();
+    }
+  }, [getDetailError]);
+
+  const onOpenDetailDrawer = (order = null) => {
+    setSelectingItem(order);
+    setOpenDetailDrawer(true);
+  };
+
+  const onCloseDetailDrawer = () => {
+    setOpenDetailDrawer(false);
+    setSelectingItem(null);
   };
 
   const columns = [
     {
-      title: 'Hoá đơn',
-      key: 'receipt',
-      render: (text, record) => `OR_${record['id']}`,
+      title: 'STT',
+      align: 'center',
+      width: 1,
+      render: (text, record, index) => <Typography.Text>{index + 1}</Typography.Text>,
     },
     {
-      title: 'Khách hàng',
-      key: 'name',
-      dataIndex: 'name',
-    },
-    {
-      title: 'Số điện thoại',
-      key: 'phone',
-      dataIndex: 'phone',
+      title: 'SĐT',
+      dataIndex: 'contact',
     },
     {
       title: 'Địa chỉ',
-      key: 'address',
       dataIndex: 'address',
     },
     {
-      title: 'Ghi chú',
-      key: 'note',
-      dataIndex: 'note',
+      title: 'Giá tiền',
+      dataIndex: 'totalPrice',
+      render: (price) => formatVietnameseCurrency(price),
     },
     {
       title: 'Ngày đặt hàng',
-      key: 'createdDate',
-      render: (text, record) => moment(record['createdDate']).format('HH:mm DD/MM/YYYY'),
+      dataIndex: 'createdAt',
+      render: (date) => moment(date).format('DD/MM/YYYY HH:mm'),
     },
     {
-      title: 'Trạng thái',
-      key: 'statusDescription',
-      render: (text, record) => (
-        <span style={{ color: record['statusColor'], fontWeight: 'bold' }}>
-          {record['statusDescription']}
-        </span>
-      ),
+      title: 'Trạng thái thanh toán',
+      dataIndex: 'isPaid',
+      render: (isPaid) =>
+        isPaid ? (
+          <Tag color='success'>Đã thanh toán</Tag>
+        ) : (
+          <Tag color='warning'>Chưa thanh toán</Tag>
+        ),
     },
     {
-      title: 'Tổng tiền',
-      key: 'totalPrice',
-      render: (text, record) => (
-        <span style={{ fontWeight: 'bold', color: 'red' }}>
-          {formatVietnameseCurrency(parseInt(record['totalPrice']))}
-        </span>
-      ),
+      title: 'Trạng thái đơn hàng',
+      dataIndex: 'status',
     },
     {
-      title: '#',
-      key: 'actions',
-      render: (text, record) => (
+      title: 'Hành động',
+      align: 'center',
+      width: 1,
+      render: (record) => (
         <Button
-          type='primary'
-          onClick={() => setSelectedId(record.id)}
-          icon={<EyeOutlined />}
-          loading={isFetchingDetailOrder && record.id === selectedId}
-        />
+          loading={isGettingDetail && record.id === selectingItem.id}
+          onClick={() => onOpenDetailDrawer(record)}
+        >
+          Xem chi tiết
+        </Button>
       ),
     },
   ];
@@ -109,7 +122,7 @@ function ListOrderModal({ open, onClose }) {
       closable={false}
     >
       {orders.result.length > 0 ? (
-        <Table loading={isFetchingOrders} rowKey='id' dataSource={orders} columns={columns} />
+        <Table loading={isFetchingOrders} dataSource={orders.result} columns={columns} />
       ) : (
         <Alert
           description='Bạn chưa có hoá đơn nào để hiển thị.'
@@ -117,8 +130,8 @@ function ListOrderModal({ open, onClose }) {
           type='warning'
         />
       )}
-      {openDetailOrderModal && detailOrder && (
-        <DetailOrderModal item={detailOrder} onClose={onCloseDetailOrderModal} />
+      {openDetailDrawer && orderDetail.order && (
+        <DetailDrawer open={openDetailDrawer} onCancel={onCloseDetailDrawer} item={orderDetail} />
       )}
     </Modal>
   );

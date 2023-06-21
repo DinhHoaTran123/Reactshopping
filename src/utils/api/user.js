@@ -32,14 +32,14 @@ const getById = (context, id) => {
 
 const create = (data) =>
   axiosClient({
-    url: '/v1/users/my-profile',
+    url: '/v1/users',
     method: HTTP_METHODS.POST,
     data,
   }).then((resp) => resp.data);
 
-const update = (data) =>
+const update = ({ data, id }) =>
   axiosClient({
-    url: `/v1/users/${data.id}`,
+    url: `/v1/users/${id}`,
     method: HTTP_METHODS.PATCH,
     data,
   }).then((resp) => resp.data);
@@ -54,13 +54,13 @@ export const userApi = {
   myProfile,
   myProfileKey: 'myProfile',
   get,
-  getKey: 'get',
+  getKey: 'getUser',
   getById,
-  getByIdKey: 'getById',
+  getByIdKey: 'getUserById',
   create,
-  createKey: 'create',
+  createKey: 'createUser',
   update,
-  updateKey: 'update',
+  updateKey: 'updateUser',
   remove,
-  removeKey: 'remove',
+  removeKey: 'removeUser',
 };

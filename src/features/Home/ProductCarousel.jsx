@@ -1,21 +1,21 @@
 import React from 'react';
-import { Button, Carousel, Col, Image, Row, Tooltip } from 'antd';
+import { Button, Carousel, Col, Image, Row } from 'antd';
 import PlaceHolderImg from 'assets/images/product-placeholder.png';
 import { formatVietnameseCurrency } from 'utils/common';
 import PropTypes from 'prop-types';
-import { PhoneFilled, RetweetOutlined, StarFilled } from '@ant-design/icons';
+import { PhoneFilled, StarFilled } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import ProductPlaceholder from 'assets/images/product-placeholder-2.png';
+import useCartManagement from 'hooks/cart-management';
 
 function ProductCarousel(props) {
   const navigate = useNavigate();
   const { products } = props;
-  const handleAddCompareProduct = (product) => {
-    // dispatch(addProductToCompare(product));
-  };
+
+  const { onAddItem } = useCartManagement();
 
   const handleAddProductToCart = (product) => {
-    // dispatch(addProductToCart(product));
+    onAddItem(product);
   };
 
   const handleViewProduct = (product) => {

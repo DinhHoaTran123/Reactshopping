@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 function ProductMenu({ product, cart = false }) {
   return (
-    <Link to={`/product/detail/${product['slug']}.${product['id']}`}>
+    <Link to={`/product/detail/${product['id']}`}>
       <Row gutter={10} align='middle'>
         <Col span={5}>
           <Image src={`${product['images'][0]['url']}`} alt='img' />

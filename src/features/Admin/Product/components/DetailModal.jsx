@@ -1,9 +1,10 @@
 import React from 'react';
-import { Button, Divider, Form, Input, InputNumber, Modal, Select, Space } from 'antd';
+import { Button, Divider, Form, Input, InputNumber, Modal, Select } from 'antd';
 import { formItemLayoutVertical } from 'utils/constants';
 import { productApi } from 'utils/api/product';
 import { useQuery } from '@tanstack/react-query';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { pick } from 'lodash';
 
 export default function DetailModal({ open, isProcessing, onSubmit, onCancel, item }) {
   const [form] = Form.useForm();
@@ -14,7 +15,11 @@ export default function DetailModal({ open, isProcessing, onSubmit, onCancel, it
     placeholderData: [],
   });
 
-  const initialValues = { ...item, imageUrls: item.images.map((img) => img.url) } || {
+  const properties = ['id', 'name', 'brand', 'category', 'description', 'price', 'countInStock'];
+
+  const initialValues = {
+    ...pick(item, properties),
+  } || {
     name: '',
     brand: '',
     category: '',
@@ -81,30 +86,32 @@ export default function DetailModal({ open, isProcessing, onSubmit, onCancel, it
           <InputNumber min={0} className='w-full' />
         </Form.Item>
         <Divider orientation='left'>Ảnh</Divider>
-        <Form.List name='imageUrls'>
-          {(fields, { add, remove }) => (
-            <>
-              {fields.map(({ key, name, ...restField }) => (
-                <div key={key} className='flex flex-row gap-x-4 w-full items-baseline'>
-                  <Form.Item
-                    {...restField}
-                    name={name}
-                    rules={[{ required: true }]}
-                    className='!flex-grow'
-                  >
-                    <Input placeholder='URL ảnh' />
-                  </Form.Item>
-                  <MinusCircleOutlined onClick={() => remove(name)} />
-                </div>
-              ))}
-              <Form.Item>
-                <Button type='dashed' onClick={() => add()} block icon={<PlusOutlined />}>
-                  Thêm ảnh
-                </Button>
-              </Form.Item>
-            </>
-          )}
-        </Form.List>
+        {!item?.id && (
+          <Form.List name='imageUrls'>
+            {(fields, { add, remove }) => (
+              <>
+                {fields.map(({ key, name, ...restField }) => (
+                  <div key={key} className='flex flex-row gap-x-4 w-full items-baseline'>
+                    <Form.Item
+                      {...restField}
+                      name={name}
+                      rules={[{ required: true }]}
+                      className='!flex-grow'
+                    >
+                      <Input placeholder='URL ảnh' />
+                    </Form.Item>
+                    <MinusCircleOutlined onClick={() => remove(name)} />
+                  </div>
+                ))}
+                <Form.Item>
+                  <Button type='dashed' onClick={() => add()} block icon={<PlusOutlined />}>
+                    Thêm ảnh
+                  </Button>
+                </Form.Item>
+              </>
+            )}
+          </Form.List>
+        )}
       </Form>
     </Modal>
   );

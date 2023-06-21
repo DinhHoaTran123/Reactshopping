@@ -54,9 +54,9 @@ const create = (data) =>
     data,
   }).then((resp) => resp.data);
 
-const update = (data) =>
+const update = ({ data, id }) =>
   axiosClient({
-    url: `/v1/products/${data.id}`,
+    url: `/v1/products/${id}`,
     method: HTTP_METHODS.PATCH,
     data,
   }).then((resp) => resp.data);
@@ -69,19 +69,19 @@ const remove = (id) =>
 
 export const productApi = {
   get,
-  getKey: 'get',
+  getKey: 'getProduct',
   getById,
-  getByIdKey: 'getById',
+  getByIdKey: 'getProductById',
   search,
-  searchKey: 'search',
+  searchKey: 'searchProduct',
   getCategories,
   getCategoriesKey: 'getCategories',
   review,
-  reviewKey: 'review',
+  reviewKey: 'reviewProduct',
   create,
-  createKey: 'create',
+  createKey: 'createProduct',
   update,
-  updateKey: 'update',
+  updateKey: 'updateProduct',
   remove,
-  removeKey: 'remove',
+  removeKey: 'removeProduct',
 };

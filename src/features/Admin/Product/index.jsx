@@ -28,7 +28,7 @@ export default function Product() {
     queryKey: [productApi.getKey, searchParams],
     queryFn: (context) => productApi.get(context, Object.fromEntries(searchParams)),
     retry: false,
-    placeholderData: DEFAULT_PAGINATION_DATA,
+    initialData: DEFAULT_PAGINATION_DATA,
   });
 
   useEffect(() => {
@@ -71,11 +71,11 @@ export default function Product() {
     mutationKey: [productApi.removeKey],
     mutationFn: productApi.remove,
     onSuccess: () => {
-      toast.success('Xóa nhật sản thành công');
+      toast.success('Xóa sản phẩm thành công');
       getData();
     },
     onError: (err) => {
-      toast.error('Xóa nhật sản thất bại');
+      toast.error('Xóa sản phẩm thất bại');
       console.error(err);
     },
   });
@@ -105,7 +105,9 @@ export default function Product() {
 
   const onSubmit = (item) => {
     if (item.id) {
-      update(item);
+      const data = { ...item };
+      delete data.id;
+      update({ data, id: item.id });
     } else {
       create(item);
     }
@@ -219,7 +221,7 @@ export default function Product() {
   return (
     <>
       <Row justify='space-between' align='middle'>
-        <Typography.Title level={2}>User</Typography.Title>
+        <Typography.Title level={2}>Sản phẩm</Typography.Title>
         <Space size='middle'>
           <Input.Search
             placeholder='Tìm kiếm user theo email'
@@ -255,7 +257,7 @@ export default function Product() {
           isProducting={isCreating || isUpdating}
           onSubmit={onSubmit}
           onCancel={onCloseDetailModal}
-          item={productDetail.product}
+          item={productDetail?.product || null}
         />
       )}
     </>

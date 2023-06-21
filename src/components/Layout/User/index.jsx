@@ -1,35 +1,47 @@
-import { Layout, Button, Alert } from 'antd';
-import React, { useMemo } from 'react';
+import { Layout } from 'antd';
+import React, { useContext } from 'react';
 import UserHeader from './Header';
 import UserFooter from './Footer';
 import './Layout.scss';
-import { FacebookOutlined, ArrowUpOutlined } from '@ant-design/icons';
-import ProductMenu from '../../Product/product-menu';
-import { Link, Outlet } from 'react-router-dom';
-import { formatVietnameseCurrency } from 'utils/common';
+import { Outlet } from 'react-router-dom';
+import { CartContext } from 'context/Cart';
+import { AuthContext } from 'context/Auth';
+import { useQuery } from '@tanstack/react-query';
+import { cartApi } from 'utils/api/cart';
 
-function UserLayout({ history }) {
-  const products = [];
-  const discountPrice = useMemo(() => {
-    let price = 0;
-    products.forEach((product) => {
-      price += parseInt(product['price']) * parseInt(product['cartQuantity']);
-    });
-    return price;
-  }, [products]);
+function UserLayout() {
+  const { userInfo, isAuthenticated } = useContext(AuthContext);
+
+  const { data: cartInfo, refetch: refetchCartInfo } = useQuery({
+    queryKey: [cartApi.myCartKey],
+    queryFn: cartApi.myCart,
+    enabled: Boolean(userInfo && isAuthenticated),
+  });
+
+  const { data: cartDetail, refetch: refetchCartDetail } = useQuery({
+    queryKey: [cartApi.getByIdKey, cartInfo?.id],
+    queryFn: (context) => cartApi.getById(context, cartInfo?.id),
+    enabled: Boolean(cartInfo),
+    placeholderData: {
+      cart: null,
+      items: [],
+    },
+  });
 
   return (
-    <Layout className='wrapper'>
-      <Layout>
-        <UserHeader history={history} />
-        <Layout.Content className='wrapper-content bg-white'>
-          <div id='main-container' className='main-content'>
-            <Outlet />
-          </div>
-        </Layout.Content>
-        <UserFooter />
+    <CartContext.Provider value={{ cartInfo, refetchCartInfo, cartDetail, refetchCartDetail }}>
+      <Layout className='wrapper'>
+        <Layout>
+          <UserHeader />
+          <Layout.Content className='wrapper-content bg-white'>
+            <div id='main-container' className='main-content'>
+              <Outlet />
+            </div>
+          </Layout.Content>
+          <UserFooter />
+        </Layout>
       </Layout>
-    </Layout>
+    </CartContext.Provider>
   );
 }
 

@@ -12,6 +12,12 @@ function ProductComment({ comments, averageRating, onComment }) {
     setContent(e.target.value);
   };
 
+  const handleSubmitComment = () => {
+    onComment(content, rating);
+    setRating(5);
+    setContent('');
+  };
+
   const { userInfo, isAuthenticated } = useContext(AuthContext);
 
   return (
@@ -20,7 +26,7 @@ function ProductComment({ comments, averageRating, onComment }) {
       <h3 style={{ color: '#02937F' }}>
         {comments.result?.length > 0 ? (
           <>
-            {averageRating} <StarFilled className='text-yellow-500' /> - Dựa trên{' '}
+            {(averageRating || 0).toFixed(2)} <StarFilled className='text-yellow-500' /> - Dựa trên{' '}
             {comments.result.length} đánh giá
           </>
         ) : (
@@ -37,7 +43,7 @@ function ProductComment({ comments, averageRating, onComment }) {
             value={content}
             onChange={handleChangeContent}
           />
-          <Button onClick={() => onComment(content, rating)} className='mt-10' type='primary'>
+          <Button onClick={handleSubmitComment} className='mt-10' type='primary'>
             Gửi đánh giá
           </Button>
         </div>

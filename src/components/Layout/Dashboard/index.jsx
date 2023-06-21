@@ -22,26 +22,29 @@ export default function DashboardLayout() {
       }
     }
   }, [location, navigate, isAuthenticated]);
-
-  return (
-    <Layout
-      hasSider
-      style={{
-        minHeight: '100vh',
-      }}
-    >
-      <DashboardSider isCollapsed={siderCollapsed} />
-      <Layout style={{ marginLeft: 200 }}>
-        <DashboardHeader siderCollapsed={siderCollapsed} setSiderCollapsed={setSiderCollapsed} />
-        <Layout.Content
-          style={{
-            margin: 16,
-          }}
-        >
-          <Outlet />
-        </Layout.Content>
-        <DashboardFooter />
+  
+  if (isAuthenticated) {
+    return (
+      <Layout
+        hasSider
+        style={{
+          minHeight: '100vh',
+        }}
+      >
+        <DashboardSider isCollapsed={siderCollapsed} />
+        <Layout style={{ marginLeft: 200 }}>
+          <DashboardHeader siderCollapsed={siderCollapsed} setSiderCollapsed={setSiderCollapsed} />
+          <Layout.Content
+            style={{
+              margin: 16,
+            }}
+          >
+            <Outlet />
+          </Layout.Content>
+          <DashboardFooter />
+        </Layout>
       </Layout>
-    </Layout>
-  );
+    );
+  }
+  return null;
 }

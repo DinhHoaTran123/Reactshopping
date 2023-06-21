@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   Row,
   Col,
@@ -6,82 +6,49 @@ import {
   Alert,
   Skeleton,
   Carousel,
-  Input,
   Button,
-  Tabs,
   Divider,
   InputNumber,
   Descriptions,
 } from 'antd';
-import { PlusOutlined, MinusOutlined, StarFilled, StarOutlined } from '@ant-design/icons';
+import { StarFilled } from '@ant-design/icons';
 import { formatVietnameseCurrency } from 'utils/common';
-import ProductCard from 'components/Product/product-card';
 import ProductComment from './comment-section';
 import { useParams } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { productApi } from 'utils/api/product';
 import { AuthContext } from 'context/Auth';
 import { toast } from 'react-toastify';
+import useCartManagement from 'hooks/cart-management';
 
 function ProductDetail() {
   const { id } = useParams();
 
   const [quantity, setQuantity] = useState(1);
-  const [disableAddToCart, setDisableAddToCart] = useState(false);
 
-  const { data: productDetail, isLoading } = useQuery({
+  const {
+    data: productDetail,
+    isLoading,
+    refetch: getProductDetail,
+  } = useQuery({
     queryKey: [productApi.getByIdKey, id],
     queryFn: (context) => productApi.getById(context, id),
     enabled: Boolean(id),
   });
 
-  const handleInputQuantity = (e) => {
-    if (isNaN(e.key)) {
-      e.preventDefault();
-    }
-  };
-
-  const handleBlurQuantity = (e) => {
-    if (quantity < 1) {
-      if (!disableAddToCart) {
-        setDisableAddToCart(true);
-      }
-    }
-  };
-
-  const handleChangeQuantity = (e) => {
-    let newQuantity = parseInt(e.target.value);
-    if (isNaN(newQuantity)) {
-      newQuantity = '';
-    }
-    setQuantity(newQuantity);
-  };
-
-  const handleFocusQuantityInput = () => {
-    if (disableAddToCart) {
-      setDisableAddToCart(false);
-    }
-  };
+  const { onAddItem } = useCartManagement();
 
   const handleAddToCart = () => {
-    // dispatch(addProductToCart(product, quantity));
-  };
-
-  const handlePlusQuantity = () => {
-    if (quantity) {
-      setQuantity(quantity + 1);
-    }
-  };
-
-  const handleMinusQuantity = () => {
-    if (quantity > 1) {
-      setQuantity(quantity - 1);
-    }
+    onAddItem(productDetail.product, quantity);
   };
 
   const { mutate: submitReview } = useMutation({
     mutationKey: [productApi.reviewKey],
     mutationFn: productApi.review,
+    onSuccess: () => {
+      toast.success('Cảm ơn bạn đã gửi bài đánh giá');
+      getProductDetail();
+    },
     onError: (err) => {
       toast.error(err.response?.data?.message || err.message || 'Unknown error');
     },
@@ -100,12 +67,6 @@ function ProductDetail() {
     }
   };
 
-  const tabPaneStyle = {
-    maxHeight: 500,
-    overflow: 'auto',
-  };
-
-  console.log(productDetail);
   const { product, reviews } = productDetail || {};
 
   return (
@@ -134,8 +95,9 @@ function ProductDetail() {
                             <h3 style={{ color: '#02937F' }}>
                               {reviews.result?.length > 0 ? (
                                 <>
-                                  {product.rating} <StarFilled className='text-yellow-500' />- Dựa
-                                  trên {reviews.result.length} đánh giá
+                                  {(product.rating || 0).toFixed(2)}{' '}
+                                  <StarFilled className='text-yellow-500' />- Dựa trên{' '}
+                                  {reviews.result.length} đánh giá
                                 </>
                               ) : (
                                 'Chưa có đánh giá nào cho sản phẩm này'
@@ -170,7 +132,7 @@ function ProductDetail() {
                               color: 'white',
                             }}
                             onClick={handleAddToCart}
-                            disabled={disableAddToCart}
+                            disabled={product.countInStock === 0}
                           >
                             THÊM VÀO GIỎ HÀNG
                           </Button>
@@ -190,7 +152,7 @@ function ProductDetail() {
                               </Descriptions.Item>
                             </Descriptions>
                             <Divider orientation='left'>Mô tả</Divider>
-                            <p>{product['description']}</p>
+                            <p>{product.description}</p>
                           </Col>
                         </Row>
                       </Col>

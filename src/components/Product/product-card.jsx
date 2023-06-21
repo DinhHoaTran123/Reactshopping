@@ -12,6 +12,7 @@ import { classNames, formatVietnameseCurrency } from 'utils/common';
 import './Product.scss';
 import { Link } from 'react-router-dom';
 import ProductPlaceholder from 'assets/images/product-placeholder-2.png';
+import useCartManagement from 'hooks/cart-management';
 
 function ProductCard(props) {
   const { product } = props;
@@ -27,8 +28,10 @@ function ProductCard(props) {
     setHidden(true);
   };
 
+  const { onAddItem } = useCartManagement();
+
   const handleAddProductToCart = () => {
-    // dispatch(addProductToCart(product));
+    onAddItem(product);
   };
 
   return (

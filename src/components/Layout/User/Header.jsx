@@ -21,11 +21,11 @@ import ListOrderModal from '../../Modal/Order';
 import { classNames } from 'utils/common';
 import ProductMenu from 'components/Product/product-menu';
 import useDebounceValue from 'hooks/debounce-value';
-import { DEFAULT_PAGINATION_DATA } from 'utils/constants';
+import { DEFAULT_PAGINATION_DATA, ROLES } from 'utils/constants';
 
 export default function Header() {
   const navigate = useNavigate();
-
+  const { setAuthenticate, userInfo } = useContext(AuthContext);
   const [orderModal, setOrderModal] = useState(false);
   const [openSearch, setOpenSearch] = useState(false);
   const [mouseEnterSearch, setMouseEnterSearch] = useState(false);
@@ -57,8 +57,6 @@ export default function Header() {
   const handleSearch = (e) => {
     setSearchKeyword(e.target.value);
   };
-
-  const { setAuthenticate, userInfo } = useContext(AuthContext);
 
   return (
     <>
@@ -130,12 +128,17 @@ export default function Header() {
               <Menu.Item key='Orders' onClick={() => setOrderModal(true)}>
                 Danh sách đơn hàng
               </Menu.Item>
+              {userInfo.role === ROLES.ADMIN && (
+                <Menu.Item key='Admin' onClick={() => navigate('/admin')}>
+                  Trang quản lý
+                </Menu.Item>
+              )}
               <Menu.Item key='SignOut' onClick={handleLogout}>
                 Đăng xuất
               </Menu.Item>
             </Menu.SubMenu>
           ) : (
-            <Menu.SubMenu icon={<UserOutlined className='icon--non-margin' />}>
+            <Menu.SubMenu title={<UserOutlined className='icon--non-margin' />}>
               <Menu.Item key='Login' onClick={() => navigate(routePaths.login)}>
                 Đăng nhập
               </Menu.Item>

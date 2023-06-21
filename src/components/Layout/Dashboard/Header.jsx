@@ -56,7 +56,7 @@ export default function DashboardHeader({ siderCollapsed, setSiderCollapsed }) {
           <Dropdown menu={{ items: actions, onClick: onSelectAction }}>
             <Space className='cursor-pointer' align='center'>
               <Typography.Text className='text-white'>
-                Hello, <span className='font-semibold'>{userInfo?.name || 'User'}</span>
+                Xin chào, <span className='font-semibold'>{userInfo?.username || 'User'}</span>
               </Typography.Text>
               <Avatar style={{ backgroundColor: token.colorPrimary }} icon={<UserOutlined />} />
             </Space>
