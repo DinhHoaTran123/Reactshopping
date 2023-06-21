@@ -19,6 +19,16 @@ export default function DashboardSider({ isCollapsed }) {
       key: [routePaths.admin.index, routePaths.admin.user].join('/'),
       icon: <DashboardOutlined />,
     },
+    {
+      label: 'Product',
+      key: [routePaths.admin.index, routePaths.admin.product].join('/'),
+      icon: <DashboardOutlined />,
+    },
+    {
+      label: 'Order',
+      key: [routePaths.admin.index, routePaths.admin.order].join('/'),
+      icon: <DashboardOutlined />,
+    },
   ];
 
   const location = useLocation();
@@ -42,7 +52,12 @@ export default function DashboardSider({ isCollapsed }) {
 
   return (
     <>
-      <Layout.Sider collapsible trigger={null} collapsed={isCollapsed}>
+      <Layout.Sider
+        collapsible
+        trigger={null}
+        collapsed={isCollapsed}
+        className='!fixed top-0 left-0 bottom-0 overflow-auto h-screen'
+      >
         <div style={{ margin: 16 }}>
           {isCollapsed ? (
             <Image preview={false} src={BrandIconOrangeTransparent} alt='Logo' height={32} />

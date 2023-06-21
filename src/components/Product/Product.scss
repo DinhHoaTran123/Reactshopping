@@ -1,37 +1,38 @@
 .product-card {
-    &__img {
-        border: 1px solid #eeecee;
-    }
+  &__img {
+    border: 1px solid #eeecee;
+    aspect-ratio: 3/4;
+  }
 
-    &__name {
-        overflow: hidden;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-    }
+  &__name {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
 }
 
 .text {
-    &--small {
-        font-size: small;
-    }
-    &--big {
-        font-size: large;
-    }
+  &--small {
+    font-size: small;
+  }
+  &--big {
+    font-size: large;
+  }
 }
 
 .custom-overlay {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    z-index: 1;
-    &-dark-bg {
-        background-color: rgba(0, 0, 0, 0.5);
-    }
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  &-dark-bg {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
 
-    .ant-btn {
-        margin: 2px;
-    }
+  .ant-btn {
+    margin: 2px;
+  }
 }

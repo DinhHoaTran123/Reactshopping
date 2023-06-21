@@ -1,11 +1,10 @@
 import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Card, Carousel, Col, Row, Tooltip, Image } from 'antd';
+import { Button, Card, Carousel, Tooltip, Image } from 'antd';
 import {
   CheckOutlined,
   EyeTwoTone,
   PhoneFilled,
-  RetweetOutlined,
   ShoppingCartOutlined,
   StarFilled,
 } from '@ant-design/icons';

@@ -10,8 +10,9 @@ import { userApi } from 'utils/api/user';
 import Login from 'features/Login';
 import Register from 'features/Register';
 // admin
-import Dashboard from 'features/Dashboard';
-import User from 'features/User';
+import AdminDashboard from 'features/Admin/Dashboard';
+import AdminUser from 'features/Admin/User';
+import AdminProduct from 'features/Admin/Product';
 // user
 import Home from 'features/Home';
 import { checkTokenValid } from 'utils/common';
@@ -58,14 +59,14 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path='/admin' element={<DashboardLayout />}>
-              <Route index element={<PageContainer Component={Dashboard} title='Dashboard' />} />
+              <Route index element={<PageContainer Component={AdminDashboard} title='Dashboard' />} />
               <Route
                 path={routePaths.admin.user}
-                element={<PageContainer Component={User} title='Admin - Người dùng' />}
+                element={<PageContainer Component={AdminUser} title='Admin - Người dùng' />}
               />
               <Route
                 path={routePaths.admin.product}
-                element={<PageContainer Component={User} title='Admin - Sản phẩm' />}
+                element={<PageContainer Component={AdminProduct} title='Admin - Sản phẩm' />}
               />
             </Route>
             <Route path='/' element={<UserLayout />}>

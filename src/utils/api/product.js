@@ -47,6 +47,26 @@ const getCategories = (context) => {
   }).then((resp) => resp.data?.data || []);
 };
 
+const create = (data) =>
+  axiosClient({
+    url: `/v1/products`,
+    method: HTTP_METHODS.POST,
+    data,
+  }).then((resp) => resp.data);
+
+const update = (data) =>
+  axiosClient({
+    url: `/v1/products/${data.id}`,
+    method: HTTP_METHODS.PATCH,
+    data,
+  }).then((resp) => resp.data);
+
+const remove = (id) =>
+  axiosClient({
+    url: `/v1/products/${id}`,
+    method: HTTP_METHODS.DELETE,
+  }).then((resp) => resp.data);
+
 export const productApi = {
   get,
   getKey: 'get',
@@ -58,4 +78,10 @@ export const productApi = {
   getCategoriesKey: 'getCategories',
   review,
   reviewKey: 'review',
+  create,
+  createKey: 'create',
+  update,
+  updateKey: 'update',
+  remove,
+  removeKey: 'remove',
 };

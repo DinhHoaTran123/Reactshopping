@@ -30,27 +30,25 @@ const getById = (context, id) => {
   }).then((resp) => resp.data?.data);
 };
 
-const create = (data) => {
+const create = (data) =>
   axiosClient({
     url: '/v1/users/my-profile',
     method: HTTP_METHODS.POST,
     data,
-  });
-};
-const update = (data) => {
+  }).then((resp) => resp.data);
+
+const update = (data) =>
   axiosClient({
     url: `/v1/users/${data.id}`,
     method: HTTP_METHODS.PATCH,
     data,
-  });
-};
+  }).then((resp) => resp.data);
 
-const remove = (id) => {
+const remove = (id) =>
   axiosClient({
     url: `/v1/users/${id}`,
     method: HTTP_METHODS.DELETE,
-  });
-};
+  }).then((resp) => resp.data);
 
 export const userApi = {
   myProfile,

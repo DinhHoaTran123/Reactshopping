@@ -50,11 +50,12 @@ export default function DashboardHeader({ siderCollapsed, setSiderCollapsed }) {
               type='text'
               icon={siderCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
               onClick={() => setSiderCollapsed(!siderCollapsed)}
+              className='text-white'
             />
           </Space>
           <Dropdown menu={{ items: actions, onClick: onSelectAction }}>
             <Space className='cursor-pointer' align='center'>
-              <Typography.Text>
+              <Typography.Text className='text-white'>
                 Hello, <span className='font-semibold'>{userInfo?.name || 'User'}</span>
               </Typography.Text>
               <Avatar style={{ backgroundColor: token.colorPrimary }} icon={<UserOutlined />} />

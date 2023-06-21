@@ -6,6 +6,7 @@ export const routePaths = {
     index: 'admin',
     user: 'user',
     product: 'product',
+    order: 'order',
   },
   user: 'user',
   product: 'product',

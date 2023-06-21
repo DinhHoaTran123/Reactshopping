@@ -31,7 +31,7 @@ export default function DashboardLayout() {
       }}
     >
       <DashboardSider isCollapsed={siderCollapsed} />
-      <Layout>
+      <Layout style={{ marginLeft: 200 }}>
         <DashboardHeader siderCollapsed={siderCollapsed} setSiderCollapsed={setSiderCollapsed} />
         <Layout.Content
           style={{
